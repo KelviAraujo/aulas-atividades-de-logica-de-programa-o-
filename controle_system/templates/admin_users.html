@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin - Usuários</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+  <div class="container">
+    <h1>Usuários</h1>
+    <form id="create-user" class="mb-3">
+      <div class="row">
+        <div class="col"><input name="username" class="form-control" placeholder="username"></div>
+        <div class="col"><input name="email" class="form-control" placeholder="email"></div>
+        <div class="col"><input name="password" class="form-control" placeholder="password" type="password"></div>
+        <div class="col"><button class="btn btn-primary">Criar</button></div>
+      </div>
+    </form>
+
+    <table class="table table-sm">
+      <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Ações</th></tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u.id }}</td>
+          <td>{{ u.username }}</td>
+          <td>{{ u.email }}</td>
+          <td><button class="btn btn-sm btn-danger" onclick="del({{ u.id }})">Excluir</button></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <script>
+    document.getElementById('create-user').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const payload = Object.fromEntries(new FormData(e.target).entries());
+      const res = await fetch('/admin/users/create', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+      if(res.ok){ window.location.reload(); } else { alert('erro'); }
+    });
+    async function del(id){ if(!confirm('Excluir?')) return; await fetch('/admin/users/'+id, {method:'DELETE'}); window.location.reload(); }
+  </script>
+</body>
+</html>
